@@ -6,7 +6,10 @@
 var objects = require('ringo/utils/objects');
 var strings = require('ringo/utils/strings');
 var {isUrlEncoded, parseParameters} = require('./parameters');
+// var {isUrlEncoded, parseParameters, slopAll} = require('./parameters');
 var {isFileUpload, parseFileUpload} = require('./fileupload');
+var {isSMTP2Web, slopAll} = require('./smtp2web');
+
 
 var {Context, NativeObject} = org.mozilla.javascript;
 
@@ -86,7 +89,9 @@ function Request(request) {
                         parseParameters(this.input.read(), postParams, this.charset);
                     } else if (isFileUpload(this.contentType)) {
                         parseFileUpload(this, postParams, this.charset);
-                    }
+                    } else if (isSMTP2Web(this.contentType)) {
+						slopAll(this.input, postParams, this.charset);
+					}
                 }
             }
             return postParams;
